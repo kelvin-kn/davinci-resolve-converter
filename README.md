@@ -1,22 +1,22 @@
 # DaVinci Resolve Converter
 
-A lightweight bash script that converts video files to H.264 MP4 format. Built specifically to solve codec and format compatibility issues with DaVinci Resolve on Linux.
+A lightweight bash script that converts video files through a two-stage workflow optimized for DaVinci Resolve editing and device playback.
 
 ## The Problem
 
-DaVinci Resolve on Linux has known issues with certain codecs and formats when importing and exporting video clips:
+DaVinci Resolve on Linux has known issues with certain codecs and formats:
 
 - **Import issues**: Clips recorded in certain formats won't import into DaVinci Resolve
-- **Export issues**: Exported clips from DaVinci Resolve don't play properly on some devices, especially mobile
+- **Export issues**: Exported clips from DaVinci Resolve don't play properly on mobile devices
 
 ## The Solution
 
-Drop your problematic video into the staging folder and this script converts it to a format that works:
+Two-stage workflow:
 
-- If a clip won't import into davinci resolve,convert it first, then import
-- If an exported clip won't play on mobile,convert to universal H.264 MP4
+1. **Stage 1**: Any format → ProRes Proxy `.mov` (for DaVinci editing)
+2. **Stage 2**: DaVinci export (ProRes `.mov`) → H.264 MP4 (for mobile/web)
 
-The script also doubles as an excellent video compression utility, reducing video size by upto 95%.
+Drop your video in the staging folder and the script automatically detects which stage to run based on the filename.
 
 ## Prerequisites
 
@@ -76,16 +76,35 @@ Place any video file into the `staging/` folder. Supported formats:
 ```
 The script will check the staging folder every 5 seconds. Great for batch processing.
 
-### 3. Get your converted videos
+### 3. Workflow stages
 
-Converted files appear in the `converted/` folder as H.264 MP4s.
+**Stage 1 - For DaVinci editing:**
+- Input: Any video format
+- Output: `*_DaVinci.mov` (ProRes Proxy)
+- Use this file in DaVinci Resolve
+
+**Stage 2 - For devices:**
+- Input: Exported ProRes `.mov` from DaVinci
+- Important: Rename the file to include `_DaVinci.mov` in the filename (e.g., `project_DaVinci.mov`)
+- The script detects this suffix to trigger Stage 2 conversion
+- Output: `*_device.mp4` (H.264)
+- Playable on Android, iOS, web browsers, smart TVs
 
 ## Offline Operation
 
 This script works **100% offline**. FFmpeg processes everything locally on your machine - no internet connection required, no cloud uploads, no telemetry.
 
-## Output Format
+## Output Formats
 
+### Stage 1: ProRes Proxy (.mov)
+| Property | Value |
+|----------|-------|
+| Container | MOV |
+| Video codec | ProRes Proxy (profile 0) |
+| Audio codec | PCM 16-bit |
+| Pixel format | yuv422p10le |
+
+### Stage 2: H.264 MP4
 | Property | Value |
 |----------|-------|
 | Container | MP4 |
@@ -95,15 +114,13 @@ This script works **100% offline**. FFmpeg processes everything locally on your 
 | Quality | CRF 18 (high quality) |
 | Compatibility | Android, iOS, web browsers, smart TVs |
 
-The `yuv420p` pixel format and H.264 codec ensure maximum compatibility across devices.
-
 ## Folder Structure
 
 ```
 davinci-resolve-converter/
 ├── convert.sh       # Main script
 ├── staging/         # Drop videos here
-└── converted/       # Converted MP4s appear here
+└── converted/       # Converted files appear here
 ```
 
 ## Help
