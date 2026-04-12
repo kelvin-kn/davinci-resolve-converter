@@ -8,6 +8,7 @@ DaVinci Resolve on Linux has known issues with certain codecs and formats:
 
 - **Import issues**: Clips recorded in certain formats won't import into DaVinci Resolve
 - **Export issues**: Exported clips from DaVinci Resolve don't play properly on mobile devices
+- **File sizes**: ProRes Proxy files are larger than compressed formats, optimized for smooth editing performance
 
 ## The Solution
 
